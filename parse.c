@@ -1,73 +1,4 @@
-// 参考：https://www.sigbus.info/compilerbook
-
-#include <ctype.h>
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-typedef enum {
-	TK_RESERVED,
-	TK_NUM,
-	TK_EOF,
-} TokenKind;
-
-typedef enum {
-  ND_ADD, // +
-  ND_SUB, // -
-  ND_MUL, // *
-  ND_DIV, // /
-  ND_EQ,
-  ND_NE,
-  ND_LT,
-  ND_LE,
-  ND_NUM, // 整数
-} NodeKind;
-
-typedef struct Node Node;
-
-struct Node {
-	NodeKind kind;
-	Node *lhs;
-	Node *rhs;
-	int val;
-};
-
-typedef struct Token Token;
-
-struct Token {
-	TokenKind kind;
-	Token *next;
-	int val;
-	char *str;
-	int len;
-};
-
-Token *token;
-
-char *user_input;
-
-Node *expr();
-Node *equality();
-Node *relational();
-Node *add();
-Node *mul();
-Node *unary();
-Node *primary();
-
-void error_at(char *loc, char *fmt, ...) {
-	va_list ap;
-	va_start(ap, fmt);
-
-	int pos = loc - user_input;
-	fprintf(stderr, "%s\n", user_input);
-	fprintf(stderr, "%*s", pos, " ");
-	fprintf(stderr, "^ ");
-	vfprintf(stderr, fmt, ap);
-	fprintf(stderr, "\n");
-	exit(1);
-}
+#include "9cc.h"
 
 bool consume(char *op) {
 	if (token->kind != TK_RESERVED || 
@@ -77,6 +8,15 @@ bool consume(char *op) {
 	}
 	token = token->next;
 	return true;
+}
+
+Token* consume_ident() {
+	if (token->kind != TK_IDENT) {
+		return NULL;
+	}
+	Token* result = token;
+	token = token->next;
+	return result;
 }
 
 void expect(char *op) {
@@ -152,6 +92,12 @@ Token *tokenize() {
 			continue;
 		}
 
+		if ('a' <= *p && *p <= 'z') {
+			cur = new_token(TK_IDENT, cur, p++, 1);
+			cur->len = 1;
+			continue;
+		}
+
 		if (isdigit(*p)) {
 			cur = new_token(TK_NUM, cur, p, 0);
 			char *q = p;
@@ -167,6 +113,32 @@ Token *tokenize() {
 	return head.next;
 }
 
+void program() {
+	int i=0;
+	while(!at_eof()) {
+		code[i++] = stmt();
+	}
+	code[i] = NULL;
+}
+
+Node *stmt() {
+	Node *node = expr();
+	expect(";");
+	return node;
+}
+
+Node *expr() {
+	return assign();
+}
+
+Node *assign() {
+	Node *node = equality();
+	if (consume("=")) {
+		node = new_node(ND_ASSIGN, node, assign());
+	}
+	return node;
+}
+
 Node *primary() {
 	if (consume("(")) {
 		Node *node = expr();
@@ -174,7 +146,19 @@ Node *primary() {
 		return node;
 	}
 
-	return new_node_num(expect_number());
+	Token *tok = consume_ident();
+	if (tok) {
+		Node *node = calloc(1, sizeof(Node));
+		node->kind = ND_LVAR;
+		node->offset = (tok->str[0] - 'a' + 1) * 8;
+		return node;
+	}
+
+	if (tok->kind != ND_NUM) {
+		error_at(token->str, "不正なトークンです");
+	}
+
+	return new_node_num(tok->val);
 }
 
 Node *unary() {
@@ -219,10 +203,6 @@ Node *add() {
 	}
 }
 
-Node *expr() {
-	return equality();
-}
-
 Node *equality() {
 	Node *node = relational();
 
@@ -259,76 +239,4 @@ Node *relational() {
 			return node;
 		}
 	}
-}
-
-void gen(Node *node) {
-	if (node->kind == ND_NUM) {
-		printf("	push %d\n", node->val);
-		return;
-	}
-
-	gen(node->lhs);
-	gen(node->rhs);
-
-	printf("	pop rdi\n");
-	printf("	pop rax\n");
-
-	switch(node->kind) {
-		case ND_ADD:
-			printf("	add rax, rdi\n");
-			break;
-		case ND_SUB:
-			printf("	sub rax, rdi\n");
-			break;
-		case ND_MUL:
-			printf("	imul rax, rdi\n");
-			break;
-		case ND_DIV:
-			printf("	cqo\n");
-			printf("	idiv rdi\n");
-			break;
-		case ND_EQ:
-			printf("	cmp rax, rdi\n");
-			printf("	sete al\n");
-			printf("	movzb rax, al\n");
-			break;
-		case ND_NE:
-			printf("	cmp rax, rdi\n");
-			printf("	setne al\n");
-			printf("	movzb rax, al\n");
-			break;
-		case ND_LT:
-			printf("	cmp rax, rdi\n");
-			printf("	setl al\n");
-			printf("	movzb rax, al\n");
-			break;
-		case ND_LE:
-			printf("	cmp rax, rdi\n");
-			printf("	setle al\n");
-			printf("	movzb rax, al\n");
-			break;
-	}
-
-	printf("	push rax\n");
-}
-
-int main(int argc, char **argv) {
-    if (argc != 2) {
-        fprintf(stderr, "引数の個数が正しくありません");
-        return 1;
-    }
-
-	user_input = argv[1];
-	token = tokenize();
-	Node *node = expr();
-
-    printf(".intel_syntax noprefix\n");
-    printf(".globl main\n");
-    printf("main:\n");
-    
-	gen (node);
-
-	printf("	pop rax\n");
-    printf("    ret\n");
-    return 0;
 }

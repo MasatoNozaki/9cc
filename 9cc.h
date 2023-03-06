@@ -75,5 +75,7 @@ Node *stmt();
 Node *assign();
 
 void gen(Node *node);
+void gen_lval(Node *node);
 
+void error(char *fmt, ...);
 void error_at(char *loc, char *fmt, ...);

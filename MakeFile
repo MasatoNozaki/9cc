@@ -5,7 +5,7 @@ OBJS=$(SRCS:.c=.o)
 9cc: $(OBJS)
 	$(CC) -o 9cc $(OBJS) $(LDFLAGS)
 
-$(OBJS): 9cc.h
+$(OBJS): tokenize.h parse.h generator.h common.h
 
 test: 9cc
 	./test.sh

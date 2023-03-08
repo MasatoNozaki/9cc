@@ -23,7 +23,7 @@ Token *tokenize(char *p) {
       continue;
     }
 
-    error("トークナイズできません");
+    error_at(token->str, "トークナイズできません");
   }
 
   new_token(TK_EOF, cur, p); // 終端

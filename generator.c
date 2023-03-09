@@ -25,8 +25,8 @@ void gen_from_abstructTree(Node *node) {
 		return;
 	}
 
-	gen(node->lhs);
-	gen(node->rhs);
+	gen_from_abstructTree(node->lhs);
+	gen_from_abstructTree(node->rhs);
 
 	printf("  pop rdi\n");
 	printf("  pop rax\n");

@@ -12,7 +12,7 @@ assert() {
         echo "$input => $actual"
     else
         echo "$input => $expected expected, but got $actual"
-        exit1
+        exit 1
     fi
 }
 

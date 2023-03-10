@@ -36,7 +36,7 @@ Node *code[100];
 // 次のトークンが期待している記号のときには、トークンを1つ読み進めて
 // 真を返す。それ以外の場合には偽を返す。
 bool consume(char *op);
-
+bool consume_return();
 Token* consume_ident();
 
 // 次のトークンが期待している記号のときには、トークンを1つ読み進める。

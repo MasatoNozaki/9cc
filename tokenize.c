@@ -24,6 +24,11 @@ Token *tokenize(char *p) {
       continue;
     }
 
+	if ('a' <= *p && *p <= 'z') {
+		cur = new_token(TK_IDENT, cur, p++, 1);
+		continue;
+	}
+
     if (isdigit(*p)) { // 数字用のnew_tokenを作ってもいいかもしれない
       cur = new_token(TK_NUM, cur, p, 1);
       cur->val = strtol(p, &p, 10);

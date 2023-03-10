@@ -51,4 +51,10 @@ assert 3 'a=1; b=2; a+b;'
 assert 6 'a=3; a*2;'
 assert 3 'foo=3; foo;'
 assert 8 'foo123=3; bar=5; foo123+bar;'
+
+assert 0 'return 0;'
+assert 4 'return (3+5)/2;'
+assert 1 'return 1; 2; 3;'
+assert 2 '1; return 2; 3;'
+assert 3 '1; 2; return 3;'
 echo OK

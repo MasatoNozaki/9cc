@@ -6,6 +6,7 @@
 
 // void gen();
 
+void gen_lval(Node *node); // 変数を読み取って、そのアドレスを使えるように（push）する
 void gen_from_abstructTree(Node *node);
 
 #endif // __GENERATOR_H__

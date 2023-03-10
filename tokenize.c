@@ -19,10 +19,15 @@ Token *tokenize(char *p) {
       continue;
     }
 
-    if (strchr("+-*/()<>", *p)) {
+    if (strchr("+-*/()<>;", *p)) {
       cur = new_token(TK_SYMBOL, cur, p++, 1);
       continue;
     }
+
+	if ('a' <= *p && *p <= 'z') {
+		cur = new_token(TK_IDENT, cur, p++, 1);
+		continue;
+	}
 
     if (isdigit(*p)) { // 数字用のnew_tokenを作ってもいいかもしれない
       cur = new_token(TK_NUM, cur, p, 1);

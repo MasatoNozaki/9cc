@@ -33,7 +33,7 @@ Token *token;
 Token *tokenize(char *p);
 
 // 新しいトークンを作成してcurに繋げる
-Token *new_token(TokenKind kind, Token *cur, char *str);
+Token *new_token(TokenKind kind, Token *cur, char *str, int len);
 
 // 終端かどうかチェックする
 bool at_eof();

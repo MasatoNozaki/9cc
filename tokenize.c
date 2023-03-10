@@ -13,26 +13,27 @@ Token *tokenize(char *p) {
     }
 
     if (strchr("+-*/()", *p)) {
-      cur = new_token(TK_SYMBOL, cur, p++);
+      cur = new_token(TK_SYMBOL, cur, p++, 1);
       continue;
     }
 
     if (isdigit(*p)) { // 数字用のnew_tokenを作ってもいいかもしれない
-      cur = new_token(TK_NUM, cur, p);
+      cur = new_token(TK_NUM, cur, p, 1);
       cur->val = strtol(p, &p, 10);
       continue;
     }
     error_at(p, "トークナイズできません");
   }
 
-  new_token(TK_EOF, cur, p); // 終端
+  new_token(TK_EOF, cur, p, 1); // 終端
   return head.next;
 }
 
-Token *new_token(TokenKind kind, Token *cur, char *str) {
+Token *new_token(TokenKind kind, Token *cur, char *str, int len) {
   Token *tok = calloc(1, sizeof(Token));
   tok->kind = kind;
   tok->str = str;
+  tok->len = len;
   cur->next = tok;
   return tok;
 }

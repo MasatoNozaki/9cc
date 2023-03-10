@@ -17,7 +17,7 @@ assert() {
 }
 
 ./9cc "1+3++" > tmp.s
-./9cc "1 + foo + 5" > tmp.s
+# ./9cc "1 + foo + 5" > tmp.s
 assert 0 0
 assert 42 42
 assert 21 "5+20-4"

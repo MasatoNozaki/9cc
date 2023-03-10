@@ -17,7 +17,6 @@ assert() {
 }
 
 ./9cc "1+3++;" > tmp.s
-# ./9cc "1 + foo + 5;" > tmp.s
 assert 0 "0;"
 assert 42 "42;"
 assert 21 "5+20-4;"
@@ -50,4 +49,6 @@ assert 0 '1>=2;'
 assert 1 'a=1; a;'
 assert 3 'a=1; b=2; a+b;'
 assert 6 'a=3; a*2;'
+assert 3 'foo=3; foo;'
+assert 8 'foo123=3; bar=5; foo123+bar;'
 echo OK

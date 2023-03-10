@@ -146,10 +146,37 @@ Node *primary() {
 	if (tok) {
 		Node *node = calloc(1, sizeof(Node));
 		node->kind = ND_LVAR;
-		node->offset = (tok->str[0] - 'a' + 1) * 8;
+
+		LVar *lvar = find_lvar(tok);
+		if (lvar) {
+			 node->offset = lvar->offset;
+		}
+		else {
+			// 後ろにつなぐのは、毎回最後尾にアクセスする必要があって面倒なため、前方に伸ばしていく
+			lvar = calloc(1, sizeof(LVar));
+			lvar->next = locals;
+			lvar->name = tok->str;
+			lvar->len = tok->len;
+			// localsが未初期化の場合、エラーになるので分岐。参考元のコードがそもそも作りが違うため、独自に実装
+			if (locals) {
+				lvar->offset = locals->offset+8;
+			}
+			else {
+				lvar->offset = 8;
+			}
+			node->offset = lvar->offset;
+			locals=lvar;
+		}
 		return node;
 	}
 
 	// そうでなければ数値のはず
 	return new_node_num(expect_number());
+}
+
+LVar *find_lvar(Token *tok) {
+  for (LVar *var = locals; var; var = var->next)
+    if (var->len == tok->len && !memcmp(tok->str, var->name, var->len)) // memcmpは一致した場合0を返す
+      return var;
+  return NULL;
 }

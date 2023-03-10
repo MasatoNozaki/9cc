@@ -62,6 +62,14 @@ Node *mul() {
   }
 }
 
+Node *unary() {
+  if (consume('+'))
+    return primary();
+  if (consume('-'))
+    return new_node(ND_SUB, new_node_num(0), primary()); // 0-xとして実装
+  return primary();
+}
+
 Node *primary() {
   // 次のトークンが"("なら、"(" expr ")"のはず
   if (consume('(')) {

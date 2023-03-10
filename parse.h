@@ -42,5 +42,6 @@ Node *new_node_num(int val);
 
 Node *expr();
 Node *mul();
+Node *unary();
 Node *primary();
 #endif // __PARSE_H__

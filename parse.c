@@ -157,7 +157,13 @@ Node *primary() {
 			lvar->next = locals;
 			lvar->name = tok->str;
 			lvar->len = tok->len;
-			lvar->offset = locals->offset+8;
+			// localsが未初期化の場合、エラーになるので分岐。参考元のコードがそもそも作りが違うため、独自に実装
+			if (locals) {
+				lvar->offset = locals->offset+8;
+			}
+			else {
+				lvar->offset = 8;
+			}
 			node->offset = lvar->offset;
 			locals=lvar;
 		}

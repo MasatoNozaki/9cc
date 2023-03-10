@@ -37,6 +37,40 @@ Node *new_node_num(int val) {
 }
 
 Node *expr() {
+	return equality();
+}
+
+Node *equality() {
+	Node *node = relational();
+
+	for (;;) {
+		if (consume("=="))
+			node = new_node(ND_EQ, node, relational());
+		else if(consume("!="))
+			node = new_node(ND_NE, node, relational());
+		else
+			return node;
+	}
+}
+
+Node *relational() {
+	Node *node = add();
+
+	for (;;) {
+		if (consume("<="))
+			node = new_node(ND_LE, node, add());
+		else if(consume(">="))
+			node = new_node(ND_LE, add(), node);
+		else if(consume("<"))
+			node = new_node(ND_LT, node, add());
+		else if(consume(">"))
+			node = new_node(ND_LT, add(), node);
+		else
+			return node;
+	}
+}
+
+Node *add() {
   Node *node = mul();
 
   for (;;) {

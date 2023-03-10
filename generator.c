@@ -1,23 +1,23 @@
 #include "generator.h"
 
-void gen() {
-	// 式の最初は数でなければならないので、それをチェックして
-	// 最初のmov命令を出力
-	printf("  mov rax, %d\n", expect_number());
+// void gen() {
+// 	// 式の最初は数でなければならないので、それをチェックして
+// 	// 最初のmov命令を出力
+// 	printf("  mov rax, %d\n", expect_number());
 
-	while (!at_eof()) {
-		if (consume('+')) {
-			printf("  add rax, %d\n", expect_number());
-      		continue;
-		}
-		else if (consume('-')) {
-			printf("  sub rax, %d\n", expect_number());
-			continue;
-		}
+// 	while (!at_eof()) {
+// 		if (consume('+')) {
+// 			printf("  add rax, %d\n", expect_number());
+//       		continue;
+// 		}
+// 		else if (consume('-')) {
+// 			printf("  sub rax, %d\n", expect_number());
+// 			continue;
+// 		}
 
-		printf("error");
-	}
-}
+// 		printf("error");
+// 	}
+// }
 
 void gen_from_abstructTree(Node *node) {
 	if (node->kind == ND_NUM) {

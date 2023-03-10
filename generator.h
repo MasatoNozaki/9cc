@@ -4,7 +4,7 @@
 #include "tokenize.h"
 #include "parse.h"
 
-void gen();
+// void gen();
 
 void gen_from_abstructTree(Node *node);
 

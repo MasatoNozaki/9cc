@@ -1,14 +1,14 @@
 #include "parse.h"
 
-bool consume(char op) {
-  if (token->kind != TK_SYMBOL || token->str[0] != op) // 種類と文字数でチェック
+bool consume(char *op) {
+  if (token->kind != TK_SYMBOL || strlen(op) != token->len || memcmp(token->str, op, token->len)) // 種類と文字数でチェック
     return false;
   token = token->next;
   return true;
 }
 
-void expect(char op) {
-  if (token->kind != TK_SYMBOL || token->str[0] != op)
+void expect(char *op) {
+  if (token->kind != TK_SYMBOL || strlen(op) != token->len || memcmp(token->str, op, token->len))
     error("'%c'ではありません", op);
   token = token->next;
 }

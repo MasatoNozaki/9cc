@@ -38,4 +38,6 @@ Token *new_token(TokenKind kind, Token *cur, char *str, int len);
 // 終端かどうかチェックする
 bool at_eof();
 
+bool startswith(char *p, char *q);
+
 #endif

@@ -12,7 +12,14 @@ Token *tokenize(char *p) {
       continue;
     }
 
-    if (strchr("+-*/()", *p)) {
+	if (startswith(p, "==") || startswith(p, "!=") ||
+        startswith(p, "<=") || startswith(p, ">=")) {
+      cur = new_token(TK_SYMBOL, cur, p, 2);
+      p += 2;
+      continue;
+    }
+
+    if (strchr("+-*/()<>", *p)) {
       cur = new_token(TK_SYMBOL, cur, p++, 1);
       continue;
     }
@@ -40,4 +47,8 @@ Token *new_token(TokenKind kind, Token *cur, char *str, int len) {
 
 bool at_eof() {
   return token->kind == TK_EOF;
+}
+
+bool startswith(char *p, char *q) {
+  return memcmp(p, q, strlen(q)) == 0;
 }

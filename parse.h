@@ -61,4 +61,7 @@ Node *add();
 Node *mul();
 Node *unary();
 Node *primary();
+
+// 変数を名前で検索する。見つからなかった場合はNULLを返す。
+LVar *find_lvar(Token *tok);
 #endif // __PARSE_H__

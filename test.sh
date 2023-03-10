@@ -12,10 +12,12 @@ assert() {
         echo "$input => $actual"
     else
         echo "$input => $expected expected, but got $actual"
-        exit1
+        exit 1
     fi
 }
 
+./9cc "1+3++" > tmp.s
+./9cc "1 + foo + 5" > tmp.s
 assert 0 0
 assert 42 42
 assert 21 "5+20-4"
@@ -24,7 +26,8 @@ assert 47 '5+6*7'
 assert 15 '5*(9-6)'
 assert 4 '(3+5)/2'
 assert 10 '-10+20'
-
+assert 10 '- -10'
+assert 10 '- - +10'
 assert 0 '0==1'
 assert 1 '42==42'
 assert 1 '0!=1'

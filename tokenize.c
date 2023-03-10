@@ -19,7 +19,7 @@ Token *tokenize(char *p) {
       continue;
     }
 
-    if (strchr("+-*/()<>;", *p)) {
+    if (strchr("+-*/()<>;=", *p)) {
       cur = new_token(TK_SYMBOL, cur, p++, 1);
       continue;
     }

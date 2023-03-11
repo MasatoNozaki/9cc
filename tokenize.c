@@ -43,6 +43,12 @@ Token *tokenize(char *p) {
 		continue;
 	}
 
+	if (startswith(p, "for") && !is_alnum(p[3])) {
+		cur = new_token(TK_FOR, cur, p, 3);
+		p += 3;
+		continue;
+	}
+
     if (strchr("+-*/()<>;=", *p)) {
       cur = new_token(TK_SYMBOL, cur, p, 1);
 	  p += 1;

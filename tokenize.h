@@ -62,4 +62,6 @@ bool startswith(char *p, char *q);
 bool is_alpha(char c);
 bool is_alnum(char c);
 
+char *strndup(char *p, int len);
+
 #endif

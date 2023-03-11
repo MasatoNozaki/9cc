@@ -111,6 +111,10 @@ void gen_from_abstructTree(Node *node) {
 			printf(".Lend%d:\n", seq);
 			return;
 		}
+		case ND_BLOCK:
+			for (Node *n = node->body; n; n = n->next)
+				gen_from_abstructTree(n);
+			return;
 	}
 
 	gen_from_abstructTree(node->lhs);

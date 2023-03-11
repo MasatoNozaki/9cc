@@ -115,6 +115,10 @@ void gen_from_abstructTree(Node *node) {
 			for (Node *n = node->body; n; n = n->next)
 				gen_from_abstructTree(n);
 			return;
+		case ND_FUNCALL:
+			printf("	call %s\n", node->funcname);
+			printf("	push rax\n");
+			return;
 	}
 
 	gen_from_abstructTree(node->lhs);

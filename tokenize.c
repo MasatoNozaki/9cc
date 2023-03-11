@@ -100,3 +100,10 @@ bool is_alpha(char c) {
 bool is_alnum(char c) {
   return is_alpha(c) || ('0' <= c && c <= '9');
 }
+
+char *strndup(char *p, int len) {
+  char *buf = malloc(len + 1);
+  strncpy(buf, p, len);
+  buf[len] = '\0';
+  return buf;
+}

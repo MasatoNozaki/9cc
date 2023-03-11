@@ -84,6 +84,17 @@ Node *stmt() {
 		node->kind = ND_RETURN;
 		node->lhs = expr();
 	}
+	else if (consume_if()) {
+		node = calloc(1, sizeof(Node));
+		node->kind = ND_IF;
+		expect("(");
+		node->cond = expr();
+		expect(")");
+		node->then = stmt();
+		if (consume_else())
+			node->els = stmt();
+		return node;
+	}
 	else {
 		node = expr();
 	}

@@ -126,7 +126,21 @@ void gen_from_abstructTree(Node *node) {
 			for (int i = nargs - 1; i >= 0; i--)  // 引数は対応するレジスタに保存しておく（最大6個）
 				printf("	pop %s\n", argreg[i]);
 
+			// 関数呼び出しの前にRSPが16の倍数になるように調整
+			// 8引くことの回答: http://herumi.in.coocan.jp/prog/x64.html
+			int seq = labelseq++;
+			printf("	mov rax, rsp\n");
+			printf("	and rax, 15\n"); // 16の倍数か確認。11111と100000でアンドすると0になる。16の倍数とは、1~5桁目が0である。
+			printf("	jnz .Lcall%d\n", seq); // 16の倍数でなかったらジャンプ
+			printf("	mov rax, 0\n"); // なぜ0？-> 可変長引数のためらしい...が、よくわからない
 			printf("	call %s\n", node->funcname);
+			printf("	jmp .Lend%d\n", seq);
+			printf(".Lcall%d:\n", seq);
+			printf("	sub rsp, 8\n"); // 関数呼び出し直後はリターンアドレス(8byte)がpushされているため、8押し下げることで16の倍数
+			printf("	mov rax, 0\n");
+			printf("	call %s\n", node->funcname);
+			printf("	add rsp, 8\n");
+			printf(".Lend%d:\n", seq);
 			printf("	push rax\n");
 			return;
 		}

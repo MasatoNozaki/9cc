@@ -70,9 +70,14 @@ int expect_number() {
   return val;
 }
 
-Node *new_node(NodeKind kind, Node *lhs, Node *rhs) {
-  Node *node = calloc(1, sizeof(Node));
-  node->kind = kind;
+Node *new_node(NodeKind kind) {
+	Node *node = calloc(1, sizeof(Node));
+	node->kind = kind;
+	return node;
+}
+
+Node *new_binary_node(NodeKind kind, Node *lhs, Node *rhs) {
+  Node *node = new_node(kind);
   node->lhs = lhs;
   node->rhs = rhs;
   return node;
@@ -96,13 +101,11 @@ Node *stmt() {
 	Node *node;
 
 	if (consume_return()) {
-		node = calloc(1, sizeof(Node));
-		node->kind = ND_RETURN;
+		node = new_node(ND_RETURN);
 		node->lhs = expr();
 	}
 	else if (consume_if()) {
-		node = calloc(1, sizeof(Node));
-		node->kind = ND_IF;
+		node = new_node(ND_IF);
 		expect("(");
 		node->cond = expr(); // 条件式
 		expect(")");
@@ -112,8 +115,7 @@ Node *stmt() {
 		return node;
 	}
 	else if (consume_while()) {
-		node = calloc(1, sizeof(Node));
-		node->kind = ND_WHILE;
+		node = new_node(ND_WHILE);
 		expect("(");
 		node->cond = expr();
 		expect(")");
@@ -121,8 +123,7 @@ Node *stmt() {
 		return node;
 	}
 	else if (consume_for()) {
-		node = calloc(1, sizeof(Node));
-		node->kind = ND_FOR;
+		node = new_node(ND_FOR);
 		expect("(");
 		if (!consume(";")) {
 			node->init = expr();
@@ -149,8 +150,7 @@ Node *stmt() {
 			cur = cur->next;
 		}
 
-		Node *node = calloc(1, sizeof(Node));
-		node->kind = ND_BLOCK;
+		Node *node = new_node(ND_BLOCK);
 		node->body = head.next;
 		return node;
 	}
@@ -170,7 +170,7 @@ Node *expr() {
 Node *assign() {
 	Node *node = equality();
 	if (consume("="))
-		node = new_node(ND_ASSIGN, node, assign());
+		node = new_binary_node(ND_ASSIGN, node, assign());
 	return node;
 }
 
@@ -179,9 +179,9 @@ Node *equality() {
 
 	for (;;) {
 		if (consume("=="))
-			node = new_node(ND_EQ, node, relational());
+			node = new_binary_node(ND_EQ, node, relational());
 		else if(consume("!="))
-			node = new_node(ND_NE, node, relational());
+			node = new_binary_node(ND_NE, node, relational());
 		else
 			return node;
 	}
@@ -192,13 +192,13 @@ Node *relational() {
 
 	for (;;) {
 		if (consume("<="))
-			node = new_node(ND_LE, node, add());
+			node = new_binary_node(ND_LE, node, add());
 		else if(consume(">="))
-			node = new_node(ND_LE, add(), node);
+			node = new_binary_node(ND_LE, add(), node);
 		else if(consume("<"))
-			node = new_node(ND_LT, node, add());
+			node = new_binary_node(ND_LT, node, add());
 		else if(consume(">"))
-			node = new_node(ND_LT, add(), node);
+			node = new_binary_node(ND_LT, add(), node);
 		else
 			return node;
 	}
@@ -209,9 +209,9 @@ Node *add() {
 
   for (;;) {
     if (consume("+"))
-      node = new_node(ND_ADD, node, mul());
+      node = new_binary_node(ND_ADD, node, mul());
     else if (consume("-"))
-      node = new_node(ND_SUB, node, mul());
+      node = new_binary_node(ND_SUB, node, mul());
     else
       return node;
   }
@@ -222,9 +222,9 @@ Node *mul() {
 
   for (;;) {
     if (consume("*"))
-      node = new_node(ND_MUL, node, unary());
+      node = new_binary_node(ND_MUL, node, unary());
     else if (consume("/"))
-      node = new_node(ND_DIV, node, unary());
+      node = new_binary_node(ND_DIV, node, unary());
     else
       return node;
   }
@@ -234,7 +234,7 @@ Node *unary() {
   if (consume("+"))
     return unary();
   if (consume("-"))
-    return new_node(ND_SUB, new_node_num(0), unary()); // 0-xとして実装
+    return new_binary_node(ND_SUB, new_node_num(0), unary()); // 0-xとして実装
   return primary();
 }
 
@@ -249,8 +249,7 @@ Node *primary() {
 	// 変数
 	Token *tok = consume_ident();
 	if (tok) {
-		Node *node = calloc(1, sizeof(Node));
-		node->kind = ND_LVAR;
+		Node *node = new_node(ND_LVAR);
 
 		LVar *lvar = find_lvar(tok);
 		if (lvar) {

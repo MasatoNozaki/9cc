@@ -68,7 +68,8 @@ void expect(char *op);
 int expect_number();
 
 // 数字ノードは葉、それ以外は内部ノードであるため、分けている
-Node *new_node(NodeKind kind, Node *lhs, Node *rhs);
+Node *new_node(NodeKind kind);
+Node *new_binary_node(NodeKind kind, Node *lhs, Node *rhs);
 Node *new_node_num(int val);
 
 void program();

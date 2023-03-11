@@ -1,5 +1,7 @@
 #include "generator.h"
 
+int labelseq = 0; // ジャンプラベルの通し番号用
+
 // void gen() {
 // 	// 式の最初は数でなければならないので、それをチェックして
 // 	// 最初のmov命令を出力
@@ -56,6 +58,29 @@ void gen_from_abstructTree(Node *node) {
 			printf("  pop rbp\n");
 			printf("  ret\n");
 			return;
+		case ND_IF: {
+			int seq = labelseq++;
+			if (node->els) {
+				gen_from_abstructTree(node->cond);
+				printf("	pop rax\n");
+				printf("	cmp rax, 0\n");
+				printf("	je .Lelse%d\n", seq); // 条件がtrueでないならjmpする
+				gen_from_abstructTree(node->then);
+				printf("	jmp .Lend%d\n", seq);
+				printf(".Lelse%d:\n", seq);
+				gen_from_abstructTree(node->els);
+				printf(".Lend%d:\n", seq);
+			}
+			else {
+				gen_from_abstructTree(node->cond);
+				printf("	pop rax\n");
+				printf("	cmp rax, 0\n");
+				printf("	je .Lend%d\n", seq);
+				gen_from_abstructTree(node->then);
+				printf(".Lend%d:\n", seq);
+			}
+			return;
+		}
 	}
 
 	gen_from_abstructTree(node->lhs);

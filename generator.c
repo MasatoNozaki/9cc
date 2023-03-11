@@ -29,14 +29,6 @@ void gen_lval(Node *node) {
 }
 
 void gen_from_abstructTree(Node *node) {
-	if (node->kind == ND_RETURN) {
-		gen_from_abstructTree(node->lhs);
-		printf("  pop rax\n");
-		printf("  mov rsp, rbp\n");
-		printf("  pop rbp\n");
-		printf("  ret\n");
-		return;
-	}
 
   	switch (node->kind) {
 		case ND_NUM:
@@ -56,6 +48,13 @@ void gen_from_abstructTree(Node *node) {
 			printf("  pop rax\n");
 			printf("  mov [rax], rdi\n");
 			printf("  push rdi\n");
+			return;
+		case ND_RETURN:
+			gen_from_abstructTree(node->lhs);
+			printf("  pop rax\n");
+			printf("  mov rsp, rbp\n");
+			printf("  pop rbp\n");
+			printf("  ret\n");
 			return;
 	}
 

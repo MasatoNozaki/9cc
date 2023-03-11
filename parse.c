@@ -31,6 +31,14 @@ bool consume_else() {
 	return true;
 }
 
+bool consume_while() {
+	if (token->kind != TK_WHILE) {
+		return false;
+	}
+	token = token->next;
+	return true;
+}
+
 Token* consume_ident() {
 	if (token->kind != TK_IDENT) {
 		return NULL;
@@ -93,6 +101,15 @@ Node *stmt() {
 		node->then = stmt(); // ifブロックの中身
 		if (consume_else())
 			node->els = stmt(); // elseブロックの中身
+		return node;
+	}
+	else if (consume_while()) {
+		node = calloc(1, sizeof(Node));
+		node->kind = ND_WHILE;
+		expect("(");
+		node->cond = expr();
+		expect(")");
+		node->then = stmt();
 		return node;
 	}
 	else {

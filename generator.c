@@ -93,6 +93,24 @@ void gen_from_abstructTree(Node *node) {
 			printf(".Lend%d:\n", seq);
 			return;
 		}
+		case ND_FOR: {
+			int seq = labelseq++;
+			if (node->init)
+				gen_from_abstructTree(node->init);
+			printf(".Lbegin%d:\n", seq);
+			if (node->cond) {
+				gen_from_abstructTree(node->cond);
+				printf("	pop rax\n");
+				printf("	cmp rax, 0\n");
+				printf("	je .Lend%d\n", seq);
+			}
+			gen_from_abstructTree(node->then);
+			if (node->inc)
+				gen_from_abstructTree(node->inc);
+			printf("	jmp .Lbegin%d\n", seq);
+			printf(".Lend%d:\n", seq);
+			return;
+		}
 	}
 
 	gen_from_abstructTree(node->lhs);

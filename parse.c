@@ -15,6 +15,22 @@ bool consume_return() {
 	return true;
 }
 
+bool consume_if() {
+	if (token->kind != TK_IF) {
+		return false;
+	}
+	token = token->next;
+	return true;
+}
+
+bool consume_else() {
+	if (token->kind != TK_ELSE) {
+		return false;
+	}
+	token = token->next;
+	return true;
+}
+
 Token* consume_ident() {
 	if (token->kind != TK_IDENT) {
 		return NULL;

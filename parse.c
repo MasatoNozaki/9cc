@@ -122,6 +122,7 @@ Node *stmt() {
 	}
 	else if (consume_for()) {
 		node = calloc(1, sizeof(Node));
+		node->kind = ND_FOR;
 		expect("(");
 		if (!consume(";")) {
 			node->init = expr();
@@ -131,7 +132,7 @@ Node *stmt() {
 			node->cond = expr();
 			expect(";");
 		}
-		if (!consume(";")) {
+		if (!consume(")")) {
 			node->inc = expr();
 			expect(")");
 		}

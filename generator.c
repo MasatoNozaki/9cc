@@ -1,6 +1,7 @@
 #include "generator.h"
 
 int labelseq = 0; // ジャンプラベルの通し番号用
+char *argreg[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"}; // 引数を保存しておくレジスタ
 
 // void gen() {
 // 	// 式の最初は数でなければならないので、それをチェックして
@@ -115,10 +116,20 @@ void gen_from_abstructTree(Node *node) {
 			for (Node *n = node->body; n; n = n->next)
 				gen_from_abstructTree(n);
 			return;
-		case ND_FUNCALL:
+		case ND_FUNCALL: {
+			int nargs = 0;
+			for (Node *arg = node->args; arg; arg = arg->next) {
+				gen_from_abstructTree(arg);
+				nargs++;
+			}
+
+			for (int i = nargs - 1; i >= 0; i--)  // 引数は対応するレジスタに保存しておく（最大6個）
+				printf("	pop %s\n", argreg[i]);
+
 			printf("	call %s\n", node->funcname);
 			printf("	push rax\n");
 			return;
+		}
 	}
 
 	gen_from_abstructTree(node->lhs);

@@ -88,11 +88,11 @@ Node *stmt() {
 		node = calloc(1, sizeof(Node));
 		node->kind = ND_IF;
 		expect("(");
-		node->cond = expr();
+		node->cond = expr(); // 条件式
 		expect(")");
-		node->then = stmt();
+		node->then = stmt(); // ifブロックの中身
 		if (consume_else())
-			node->els = stmt();
+			node->els = stmt(); // elseブロックの中身
 		return node;
 	}
 	else {

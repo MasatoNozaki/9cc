@@ -22,7 +22,8 @@ typedef enum {
   ND_ELSE,
   ND_WHILE,
   ND_FOR,
-  ND_BLOCK
+  ND_BLOCK,
+  ND_FUNCALL
 } NodeKind;
 
 typedef struct Node Node;
@@ -41,6 +42,8 @@ struct Node {
 
 	Node *body;
 	Node *next;
+
+	char *funcname;
 	
 	int val;       // kindがND_NUMの場合のみ使う
 	int offset;    // kindがND_LVARの場合のみ使う

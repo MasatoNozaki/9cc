@@ -249,6 +249,13 @@ Node *primary() {
 	// 変数
 	Token *tok = consume_ident();
 	if (tok) {
+		if (consume("(")) {
+			expect(")");
+			Node *node = new_node(ND_FUNCALL);
+			node->funcname = strndup(tok->str, tok->len);
+			return node;
+		}
+
 		Node *node = new_node(ND_LVAR);
 
 		LVar *lvar = find_lvar(tok);

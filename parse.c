@@ -238,6 +238,20 @@ Node *unary() {
   return primary();
 }
 
+Node *func_args() {
+	if (consume(")"))
+		return NULL;
+
+	Node *head = assign();
+	Node *cur = head;
+	while (consume(",")) {
+		cur->next = assign();
+		cur = cur->next;
+	}
+	expect(")");
+	return head;
+}
+
 Node *primary() {
 	// 次のトークンが"("なら、"(" expr ")"のはず
 	if (consume("(")) {
@@ -253,6 +267,7 @@ Node *primary() {
 			expect(")");
 			Node *node = new_node(ND_FUNCALL);
 			node->funcname = strndup(tok->str, tok->len);
+			node->args = func_args();
 			return node;
 		}
 

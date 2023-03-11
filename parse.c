@@ -39,6 +39,14 @@ bool consume_while() {
 	return true;
 }
 
+bool consume_for() {
+	if (token->kind != TK_FOR) {
+		return false;
+	}
+	token = token->next;
+	return true;
+}
+
 Token* consume_ident() {
 	if (token->kind != TK_IDENT) {
 		return NULL;
@@ -109,6 +117,25 @@ Node *stmt() {
 		expect("(");
 		node->cond = expr();
 		expect(")");
+		node->then = stmt();
+		return node;
+	}
+	else if (consume_for()) {
+		node = calloc(1, sizeof(Node));
+		node->kind = ND_FOR;
+		expect("(");
+		if (!consume(";")) {
+			node->init = expr();
+			expect(";");
+		}
+		if (!consume(";")) {
+			node->cond = expr();
+			expect(";");
+		}
+		if (!consume(")")) {
+			node->inc = expr();
+			expect(")");
+		}
 		node->then = stmt();
 		return node;
 	}

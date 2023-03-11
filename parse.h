@@ -20,7 +20,8 @@ typedef enum {
   ND_RETURN,
   ND_IF,
   ND_ELSE,
-  ND_WHILE
+  ND_WHILE,
+  ND_FOR
 } NodeKind;
 
 typedef struct Node Node;
@@ -31,7 +32,9 @@ struct Node {
 	Node *lhs;     // 左辺
 	Node *rhs;     // 右辺
 
+	Node *init;
 	Node *cond;
+	Node *inc;
 	Node *then;
 	Node *els;
 	
@@ -48,6 +51,7 @@ bool consume_return();
 bool consume_if();
 bool consume_else();
 bool consume_while();
+bool consume_for();
 Token* consume_ident();
 
 // 次のトークンが期待している記号のときには、トークンを1つ読み進める。

@@ -44,6 +44,7 @@ struct Node {
 	Node *next;
 
 	char *funcname;
+	Node *args;
 	
 	int val;       // kindがND_NUMの場合のみ使う
 	int offset;    // kindがND_LVARの場合のみ使う
@@ -84,6 +85,7 @@ Node *relational();
 Node *add();
 Node *mul();
 Node *unary();
+Node *func_args();
 Node *primary();
 
 // 変数を名前で検索する。見つからなかった場合はNULLを返す。

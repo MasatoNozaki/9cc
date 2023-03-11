@@ -15,6 +15,22 @@ bool consume_return() {
 	return true;
 }
 
+bool consume_if() {
+	if (token->kind != TK_IF) {
+		return false;
+	}
+	token = token->next;
+	return true;
+}
+
+bool consume_else() {
+	if (token->kind != TK_ELSE) {
+		return false;
+	}
+	token = token->next;
+	return true;
+}
+
 Token* consume_ident() {
 	if (token->kind != TK_IDENT) {
 		return NULL;
@@ -67,6 +83,17 @@ Node *stmt() {
 		node = calloc(1, sizeof(Node));
 		node->kind = ND_RETURN;
 		node->lhs = expr();
+	}
+	else if (consume_if()) {
+		node = calloc(1, sizeof(Node));
+		node->kind = ND_IF;
+		expect("(");
+		node->cond = expr(); // 条件式
+		expect(")");
+		node->then = stmt(); // ifブロックの中身
+		if (consume_else())
+			node->els = stmt(); // elseブロックの中身
+		return node;
 	}
 	else {
 		node = expr();

@@ -17,18 +17,26 @@ typedef enum {
   ND_ASSIGN, // =
   ND_LVAR,   // ローカル変数
   ND_NUM, // 整数
-  ND_RETURN
+  ND_RETURN,
+  ND_IF,
+  ND_ELSE
 } NodeKind;
 
 typedef struct Node Node;
 
 // 抽象構文木のノードの型
 struct Node {
-  NodeKind kind; // ノードの型
-  Node *lhs;     // 左辺
-  Node *rhs;     // 右辺
-  int val;       // kindがND_NUMの場合のみ使う
-  int offset;    // kindがND_LVARの場合のみ使う
+	NodeKind kind; // ノードの型
+	Node *lhs;     // 左辺
+	Node *rhs;     // 右辺
+
+    // "if" statement
+	Node *cond;
+	Node *then;
+	Node *els;
+	
+	int val;       // kindがND_NUMの場合のみ使う
+	int offset;    // kindがND_LVARの場合のみ使う
 };
 
 Node *code[100];
@@ -37,6 +45,8 @@ Node *code[100];
 // 真を返す。それ以外の場合には偽を返す。
 bool consume(char *op);
 bool consume_return();
+bool consume_if();
+bool consume_else();
 Token* consume_ident();
 
 // 次のトークンが期待している記号のときには、トークンを1つ読み進める。

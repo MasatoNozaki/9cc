@@ -149,7 +149,7 @@ Node *stmt() {
 			cur = cur->next;
 		}
 
-		Node *node = calloc(1, sizeof(ND_BLOCK));
+		Node *node = calloc(1, sizeof(Node));
 		node->kind = ND_BLOCK;
 		node->body = head.next;
 		return node;
